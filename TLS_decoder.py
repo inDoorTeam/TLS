@@ -62,7 +62,7 @@ if __name__ == "__main__":
     hand_shake = b''
     while len(content1) > 0:
         typ, ver1, ver2, len1, len2 = content1[:5]
-        length = (len1 * 256) + len2
+        length = (len1 << 8) + len2
         fragmt = content1[5:5+length]
         tail   = content1[5+length:]
         if typ == 22:
@@ -76,7 +76,7 @@ if __name__ == "__main__":
     hand_shake = b''
     while len(content2) > 0:
         typ, ver1, ver2, len1, len2 = content2[:5]
-        length = (len1 * 256) + len2
+        length = (len1 << 8) + len2
         fragmt = content2[5:5+length]
         tail   = content2[5+length:]
         if typ == 22:
