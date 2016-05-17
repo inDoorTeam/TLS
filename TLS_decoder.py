@@ -50,7 +50,7 @@ def AES128CBC_DECRYPT(secret_key, ini_vector, ciphertext):
     ), ciphertext)
     assert retcode == 0 and stderr == b''
     return stdout
-def main():
+if __name__ == "__main__":
     in1, in2, in3, out1, out2, = sys.argv[1:]
     f1 = open(in1, 'rb') # C2S
     f2 = open(in2, 'rb') # S2C
@@ -66,10 +66,23 @@ def main():
         fragmt = content1[5:5+length]
         tail   = content1[5+length:]
         if typ == 22:
-            print('found one record with length = ',length)
+            #print('found one record with length = ',length)
             hand_shake += fragmt
-        content1 = tail
+        content1 = content1[5+length:]
 
     cli_random = hand_shake[6:38]
-    print(cli_random.hex())
-main()
+    print('client_random =', cli_random.hex())
+
+    hand_shake = b''
+    while len(content2) > 0:
+        typ, ver1, ver2, len1, len2 = content2[:5]
+        length = (len1 * 256) + len2
+        fragmt = content2[5:5+length]
+        tail   = content2[5+length:]
+        if typ == 22:
+            #print('found one record with length = ',length)
+            hand_shake += fragmt
+        content2 = content2[5+length:]
+
+    ser_random = hand_shake[6:38]
+    print('server_random =', ser_random.hex())
