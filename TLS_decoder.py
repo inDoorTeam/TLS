@@ -58,7 +58,6 @@ if __name__ == "__main__":
     content2 = f2.read()
     f1.close()
     f2.close()
-
     hand_shake = b''
     while len(content1) > 0:
         typ, ver1, ver2, len1, len2 = content1[:5]
@@ -66,13 +65,12 @@ if __name__ == "__main__":
         fragmt = content1[5:5+length]
         tail   = content1[5+length:]
         if typ == 22:
-            #print('found one record with length = ',length)
             hand_shake += fragmt
         content1 = content1[5+length:]
-
     cli_random = hand_shake[6:38]
+    enc_pre_master = hand_shake[292:548]
+    pre_master = RSA_DECRYPT('test1/in3', enc_pre_master)
     print('client_random =', cli_random.hex())
-
     hand_shake = b''
     while len(content2) > 0:
         typ, ver1, ver2, len1, len2 = content2[:5]
@@ -80,9 +78,9 @@ if __name__ == "__main__":
         fragmt = content2[5:5+length]
         tail   = content2[5+length:]
         if typ == 22:
-            #print('found one record with length = ',length)
             hand_shake += fragmt
         content2 = content2[5+length:]
-
     ser_random = hand_shake[6:38]
     print('server_random =', ser_random.hex())
+    print('encrypted_pre_master_secret =', enc_pre_master.hex())
+    print('pre_master_secret =', pre_master.hex())
