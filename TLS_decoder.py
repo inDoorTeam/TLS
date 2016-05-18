@@ -41,7 +41,7 @@ if __name__ == "__main__":
     ser_random = hand_shake[6:38]
 
     mast_secret   = TLS_PRF(pre_master,  str.encode("master secret"), cli_random + ser_random, 48)
-    key_block     = TLS_PRF(mast_secret, str.encode("key expansion"), cli_random + ser_random, 104)
+    key_block     = TLS_PRF(mast_secret, str.encode("key expansion"), ser_random + cli_random, 104)
     cli_write_key = key_block[40:56] #16 bytes for a cli_write_key, 40 bytes 無視
     ser_write_key = key_block[56:72]
     cli_write_iv  = key_block[72:88] #16 bytes iv in AES_128_CBC
