@@ -1,4 +1,5 @@
 import sys
+import binascii
 def B2I(b):
     assert type(b) is bytes
     return int.from_bytes(b, byteorder='big')
@@ -72,6 +73,7 @@ if __name__ == "__main__":
     pre_master = RSA_DECRYPT('test1/in3', enc_pre_master)
     print('client_random =', cli_random.hex())
     hand_shake = b''
+    app_data = b''
     while len(content2) > 0:
         typ, ver1, ver2, len1, len2 = content2[:5]
         length = (len1 << 8) + len2
@@ -79,8 +81,24 @@ if __name__ == "__main__":
         tail   = content2[5+length:]
         if typ == 22:
             hand_shake += fragmt
+        if typ == 23:
+            app_data += fragmt
         content2 = content2[5+length:]
     ser_random = hand_shake[6:38]
-    print('server_random =', ser_random.hex())
-    print('encrypted_pre_master_secret =', enc_pre_master.hex())
-    print('pre_master_secret =', pre_master.hex())
+    mast_secret = TLS_PRF(pre_master, str.encode("master secret"), cli_random + ser_random, 48)
+
+    key_block = TLS_PRF(mast_secret, str.encode("key expansion"), ser_random  + cli_random, 88)
+    cli_write_key = key_block[40:56]
+    ser_write_key = key_block[56:72]
+    cli_write_iv = key_block[72:80]
+    ser_write_iv = key_block[80:88]
+
+    app_data = AES128CBC_DECRYPT(cli_write_key, cli_write_iv + ser_write_iv, app_data)
+    # print('server_random =', ser_random.hex())
+    # print('encrypted_pre_master_secret =', enc_pre_master.hex())
+    # print('pre_master_secret =', pre_master.hex())
+    # print('master_secret =', mast_secret.hex())
+    # print('client_write_key =', cli_write_key.hex())
+    # print('server_write_key =', ser_write_key.hex())
+    print(app_data)
+    #print(binascii.unhexlify(app_data.hex()))
