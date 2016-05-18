@@ -1,1 +1,5 @@
-*½èñC£u#^¬¤·ßŒ6á¡"³/lüö!_
+GET / HTTP/1.0
+User-Agent: curl/7.35.0
+Host: localhost:4430
+Accept: */*
+

@@ -16,7 +16,6 @@ if __name__ == "__main__":
         length = (len1 << 8) + len2
         fragmt = content1[5:5+length]
         if typ == 22:
-            print('found a fragmt, ', len(fragmt))
             hand_shake += fragmt
             tail = fragmt
         elif typ == 23:
@@ -36,7 +35,7 @@ if __name__ == "__main__":
         if typ == 22:
             hand_shake += fragmt
         elif typ == 23:
-            resp_app_data = fragmt
+            resp_app_data += fragmt
         content2 = content2[5+length:]
     ser_random = hand_shake[6:38]
 
